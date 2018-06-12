@@ -7,6 +7,16 @@
 
 
 #include <avr/io.h>
+#include <stdio.h>
+#include <string.h>
+#include <avr/interrupt.h>
+#include <util/atomic.h>
+
+
+ISR(TIMER1_COMPA_vect)
+{
+	
+}
 
 int main(void)
 {
