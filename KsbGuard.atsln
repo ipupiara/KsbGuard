@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "KsbGuard", "KsbGuard\KsbGuard.cproj", "{F0E0361C-46EA-4592-BA21-7152D5C1E052}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0E0361C-46EA-4592-BA21-7152D5C1E052}.Debug|AVR.ActiveCfg = Debug|AVR
+		{F0E0361C-46EA-4592-BA21-7152D5C1E052}.Debug|AVR.Build.0 = Debug|AVR
+		{F0E0361C-46EA-4592-BA21-7152D5C1E052}.Release|AVR.ActiveCfg = Release|AVR
+		{F0E0361C-46EA-4592-BA21-7152D5C1E052}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
