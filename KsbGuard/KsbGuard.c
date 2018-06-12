@@ -18,6 +18,11 @@ ISR(TIMER1_COMPA_vect)
 	
 }
 
+ISR(TIMER1_COMPA_vect)
+{
+	
+}
+
 int main(void)
 {
     while(1)
