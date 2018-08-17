@@ -1,0 +1,20 @@
+[Eagle]
+Version="05 08 00"
+Platform="Windows"
+Serial="20E31C20DF-LSR-WLM-NCP"
+Globals="Globals"
+Desktop="Desktop"
+
+[Globals]
+AutoSaveProject=1
+UsedLibrary="D:/projects/KsbGuard/KsbSchematics/qfm-trx1-24g.lbr"
+
+[Win_1]
+Type="Control Panel"
+Loc="124 46 894 661"
+State=2
+Number=0
+
+[Desktop]
+Screen="1366 768"
+Window="Win_1"
