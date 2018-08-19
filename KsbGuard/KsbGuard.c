@@ -152,11 +152,11 @@ void setHW()
 		
 		tick0Cnt = 0;
 		ticks0Needed = 20;   // 10 sec
-		TCCR1 = (1 << CTC1) | (1 << CS13) | (1 << CS12)| (1 << CS11)| (1 << CS10) ;   // set prescaler to 16384
-		OCR1A = 244;  // counter top value means approx   1 interrupt per sec
-		GTCCR = 0x00;
-		TIMSK  = 1 << OCIE1A;  //  interrupt needed
-		TCNT1 = 0x00 ;
+		//TCCR1 = (1 << CTC1) | (1 << CS13) | (1 << CS12)| (1 << CS11)| (1 << CS10) ;   // set prescaler to 16384
+		//OCR1A = 244;  // counter top value means approx   1 interrupt per sec
+		//GTCCR = 0x00;
+		//TIMSK  = 1 << OCIE1A;  //  interrupt needed
+		//TCNT1 = 0x00 ;
 		
 	
 	// set Timer 1    
