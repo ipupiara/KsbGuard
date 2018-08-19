@@ -43,6 +43,9 @@ int isPassingBeamOn()
 
 int isEngineRunning()
 {
+	int res = 0;
+	
+	return res;
 	
 }
 
@@ -59,7 +62,7 @@ void stopLEDs()
 void switchLEDs()
 {
 	if (! ledsRunning)  {
-		startLEDs;
+		startLEDs();
 	}
 
 }
@@ -125,9 +128,6 @@ ISR(TIMER1_COMPA_vect)
 		}  else {
 			stopLEDs();
 		}
-	}
-	
-	
 	
 	sei();
 }
