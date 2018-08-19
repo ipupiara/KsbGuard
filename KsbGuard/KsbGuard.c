@@ -209,7 +209,7 @@ void setHW()
 		ticks0Needed = shortBeepCnt;   // somewhat more than 0.1 sec
 		
 		
-		OCR0A = 195;  // counter top value means approx  0.025  interrupt per sec
+		OCR0A = 195;  // counter  value means approx  0.025  sec interval 
 		TCNT0 = 0x0000;
 		TCCR0A =  (1 << WGM01);  //  CTC
 //		TCCR0B = ((1 << CS02)|  (1 << CS00)  ) ;   // set prescaler to 1024 and start
