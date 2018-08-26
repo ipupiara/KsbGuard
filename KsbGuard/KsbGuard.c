@@ -189,17 +189,23 @@ ISR(TIM1_COMPA_vect)
 
 void setHW()
 {
+	cli();
 	//  set GPIO
+	//	GIMSK =  (1 << PCIE0) | (1 << PCIE1);   // pin change interrupt enable on both ports
+	//  PCMSK1 =  (1 << PCINT8);         // enable individual pcint interrupts
+	//	PCMSK0 = (1 <<< PCINT0);
 	
+	//  set pcintn interrupts so that the system can get halted when idle
 	
 		ledsRunning = 0;
 	
-	// set clock prescaler to 2
-	cli();
+	 // set clock prescaler to 2
+	
 	 //asm volatile (
 	 //"sbi 0x1f,0x02" "\r\n"
 	 //"sbi 0x1f,0x01" "\r\n"
 	 //);
+	 
 //		CLKPR = (1<<CLKPCE);
 //		CLKPR = (1<<CLKPS0);
 		
@@ -207,8 +213,7 @@ void setHW()
 		
 		tick0Cnt = 0;
 		ticks0Needed = shortBeepCnt;   // somewhat more than 0.1 sec
-		
-		
+			
 		OCR0A = 195;  // counter  value means approx  0.025  sec interval 
 		TCNT0 = 0x0000;
 		TCCR0A =  (1 << WGM01);  //  CTC
@@ -218,10 +223,7 @@ void setHW()
 		GTCCR = 0x00;
 		TIMSK0  = 1 << OCIE0A;  //  interrupt needed
 
-	
-		
-	
-	// set Timer 1    
+// set Timer 1    
 	
 	tick1Cnt = 0;
 			
@@ -234,8 +236,7 @@ void setHW()
 	GTCCR = 0x00;
 	TIMSK1  = 1 << OCIE1A;  //  interrupt needed 	
 		
-	 sei();
-	
+	sei();
 }
 
 int main(void)
