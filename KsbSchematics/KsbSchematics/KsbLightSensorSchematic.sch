@@ -11028,10 +11028,13 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="C2" gate="G$1" pin="+"/>
 <pinref part="C3" gate="G$1" pin="+"/>
 <wire x1="43.18" y1="124.46" x2="43.18" y2="165.1" width="0.1524" layer="91"/>
-<wire x1="43.18" y1="165.1" x2="93.98" y2="165.1" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="165.1" x2="88.9" y2="165.1" width="0.1524" layer="91"/>
 <pinref part="R4" gate="G$1" pin="2"/>
 <pinref part="R8" gate="G$1" pin="2"/>
+<wire x1="88.9" y1="165.1" x2="93.98" y2="165.1" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="165.1" x2="93.98" y2="157.48" width="0.1524" layer="91"/>
+<pinref part="R7" gate="G$1" pin="2"/>
+<wire x1="88.9" y1="165.1" x2="88.9" y2="157.48" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <wire x1="-66.04" y1="93.98" x2="-66.04" y2="88.9" width="0.1524" layer="91"/>
@@ -11249,7 +11252,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="S1" gate="1" pin="P"/>
 <pinref part="R10" gate="G$1" pin="1"/>
 <label x="-91.44" y="83.82" size="2.54" layer="95"/>
-<label x="-50.8" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="PASSINGBEAM-ON" class="0">
