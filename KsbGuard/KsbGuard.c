@@ -191,9 +191,13 @@ void setHW()
 {
 	cli();
 	//  set GPIO
-	//	GIMSK =  (1 << PCIE0) | (1 << PCIE1);   // pin change interrupt enable on both ports
-	//  PCMSK1 =  (1 << PCINT8);         // enable individual pcint interrupts
-	//	PCMSK0 = (1 <<< PCINT0);
+	
+		PORTA = 0x00;
+		DDRA = 0x00;  // tobe set as needed for port A and B
+		
+		PORTB = 0x00;
+		DDRB  = 0x00;	
+
 	
 	//  set pcintn interrupts so that the system can get halted when idle
 	
