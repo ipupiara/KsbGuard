@@ -11051,6 +11051,7 @@ W = angled&lt;p&gt;
 <part name="SUPPLY23" library="supply2" deviceset="+12V" device="" value="+5V"/>
 <part name="SUPPLY24" library="supply2" deviceset="GND" device=""/>
 <part name="DWIRE" library="con-lstb" deviceset="MA03-2" device=""/>
+<part name="SUPPLY25" library="supply2" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -11125,6 +11126,7 @@ W = angled&lt;p&gt;
 <instance part="SUPPLY23" gate="+12V" x="132.08" y="63.5"/>
 <instance part="SUPPLY24" gate="GND" x="139.7" y="53.34"/>
 <instance part="DWIRE" gate="1" x="124.46" y="58.42" rot="R180"/>
+<instance part="SUPPLY25" gate="GND" x="-66.04" y="114.3"/>
 </instances>
 <busses>
 </busses>
@@ -11199,6 +11201,8 @@ W = angled&lt;p&gt;
 <pinref part="C1" gate="G$1" pin="-"/>
 <pinref part="C2" gate="G$1" pin="-"/>
 <pinref part="C3" gate="G$1" pin="-"/>
+<wire x1="-15.24" y1="116.84" x2="-66.04" y2="116.84" width="0.1524" layer="91"/>
+<pinref part="SUPPLY25" gate="GND" pin="GND"/>
 </segment>
 <segment>
 <pinref part="S1" gate="1" pin="S"/>
@@ -11357,7 +11361,7 @@ W = angled&lt;p&gt;
 <wire x1="-66.04" y1="124.46" x2="-15.24" y2="124.46" width="0.1524" layer="91"/>
 <wire x1="-15.24" y1="124.46" x2="-12.7" y2="124.46" width="0.1524" layer="91"/>
 <junction x="-15.24" y="124.46"/>
-<label x="-83.82" y="116.84" size="2.54" layer="95" xref="yes"/>
+<label x="-106.68" y="114.3" size="2.54" layer="95" xref="yes"/>
 <pinref part="IC1" gate="A1" pin="VI"/>
 <pinref part="SUPPLY1" gate="+12V" pin="+12V"/>
 <pinref part="C1" gate="G$1" pin="+"/>
