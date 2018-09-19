@@ -11185,24 +11185,31 @@ W = angled&lt;p&gt;
 <segment>
 <wire x1="-2.54" y1="116.84" x2="10.16" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="10.16" y1="116.84" x2="22.86" y2="116.84" width="0.1524" layer="91"/>
-<wire x1="22.86" y1="116.84" x2="88.9" y2="116.84" width="0.1524" layer="91"/>
-<wire x1="88.9" y1="116.84" x2="93.98" y2="116.84" width="0.1524" layer="91"/>
-<wire x1="88.9" y1="127" x2="88.9" y2="116.84" width="0.1524" layer="91"/>
-<wire x1="93.98" y1="127" x2="93.98" y2="116.84" width="0.1524" layer="91"/>
-<wire x1="93.98" y1="129.54" x2="93.98" y2="127" width="0.1524" layer="91"/>
 <wire x1="-2.54" y1="116.84" x2="-15.24" y2="116.84" width="0.1524" layer="91"/>
 <junction x="-2.54" y="116.84"/>
 <junction x="10.16" y="116.84"/>
-<junction x="22.86" y="116.84"/>
 <pinref part="IC1" gate="A1" pin="GND"/>
 <pinref part="SUPPLY15" gate="GND" pin="GND"/>
-<pinref part="SENS-1" gate="G$1" pin="P$4"/>
-<pinref part="SENS-1" gate="G$1" pin="P$2"/>
 <pinref part="C1" gate="G$1" pin="-"/>
 <pinref part="C2" gate="G$1" pin="-"/>
 <pinref part="C3" gate="G$1" pin="-"/>
 <wire x1="-15.24" y1="116.84" x2="-66.04" y2="116.84" width="0.1524" layer="91"/>
 <pinref part="SUPPLY25" gate="GND" pin="GND"/>
+<wire x1="22.86" y1="116.84" x2="48.26" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="116.84" x2="48.26" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="106.68" x2="109.22" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="106.68" x2="109.22" y2="116.84" width="0.1524" layer="91"/>
+<pinref part="R2" gate="1" pin="A"/>
+<pinref part="SUPPLY6" gate="GND" pin="GND"/>
+<wire x1="109.22" y1="116.84" x2="109.22" y2="127" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="127" x2="116.84" y2="127" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="129.54" x2="93.98" y2="127" width="0.1524" layer="91"/>
+<pinref part="SENS-1" gate="G$1" pin="P$2"/>
+<wire x1="93.98" y1="127" x2="93.98" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="116.84" x2="93.98" y2="116.84" width="0.1524" layer="91"/>
+<pinref part="SENS-1" gate="G$1" pin="P$4"/>
+<wire x1="88.9" y1="127" x2="88.9" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="116.84" x2="93.98" y2="116.84" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="S1" gate="1" pin="S"/>
@@ -11225,19 +11232,11 @@ W = angled&lt;p&gt;
 <pinref part="SUPPLY21" gate="GND" pin="GND"/>
 </segment>
 <segment>
-<pinref part="R2" gate="1" pin="A"/>
-<pinref part="SUPPLY6" gate="GND" pin="GND"/>
-</segment>
-<segment>
 <pinref part="SUPPLY24" gate="GND" pin="GND"/>
 <wire x1="132.08" y1="55.88" x2="139.7" y2="55.88" width="0.1524" layer="91"/>
 <pinref part="DWIRE" gate="1" pin="6"/>
-</segment>
-<segment>
-<pinref part="SG1" gate="G$1" pin="2"/>
-<pinref part="SUPPLY17" gate="GND" pin="GND"/>
-</segment>
-<segment>
+<wire x1="139.7" y1="55.88" x2="157.48" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="55.88" x2="157.48" y2="10.16" width="0.1524" layer="91"/>
 <wire x1="147.32" y1="10.16" x2="147.32" y2="17.78" width="0.1524" layer="91"/>
 <pinref part="LED1" gate="G$1" pin="C"/>
 <pinref part="LED2" gate="G$1" pin="C"/>
@@ -11245,6 +11244,11 @@ W = angled&lt;p&gt;
 <junction x="147.32" y="17.78"/>
 <pinref part="SUPPLY14" gate="GND" pin="GND"/>
 <wire x1="124.46" y1="10.16" x2="147.32" y2="10.16" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="10.16" x2="147.32" y2="10.16" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SG1" gate="G$1" pin="2"/>
+<pinref part="SUPPLY17" gate="GND" pin="GND"/>
 </segment>
 </net>
 <net name="N$6" class="0">
