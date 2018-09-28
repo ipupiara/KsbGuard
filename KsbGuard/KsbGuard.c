@@ -35,7 +35,7 @@ morseLetterType * currentMorseLetter;
 int isHandbreakPulled()
 {
 	int res = 0;
-	if ( (PINB & (1<< PINB0) == 0 )  ){
+	if ( ((PINB & (1<< PINB0)) == 0 )  ){
 		res = 1;
 	}
 	return res;
@@ -44,7 +44,7 @@ int isHandbreakPulled()
 int isKsbPulled()
 {
 	int res = 0;
-	if ( (PINB & (1<< PINB2) == 0 )  ){
+	if ( ((PINB & (1<< PINB2)) == 0 )  ){
 		res = 1;
 	}
 	return res;
@@ -53,7 +53,7 @@ int isKsbPulled()
 int isPassingBeamOn()
 {
 	int res = 0;
-	if ( (PINB & (1<< PINB0) == 0 )  ){
+	if ( ((PINA & (1<< PINA3)) == 0 )  ){
 		res = 1;
 	}	
 	return res;
@@ -62,7 +62,7 @@ int isPassingBeamOn()
 int isEngineRunning()
 {
 	int res = 0;
-	if ( (PINB & (1<< PINB0) == 0 )  ){
+	if ( ((PINB & (1<< PINB1)) == 0 )  ){
 		res = 1;
 	}	
 	return res;
@@ -141,10 +141,10 @@ void stopBeep()
 	stopBuzzer();
 }
 
-void morseLetter(morseLetterType letter, int pos) 
+void morseLetter(morseLetterType* letter, int pos) 
 {
 	if (pos == 0) {
-		currentMorseLetter = (morseLetterType *) &letter;
+		currentMorseLetter =  letter;
 	}
 	if (*currentMorseLetter[pos] == 1)  {
 		beepShort();
@@ -177,12 +177,12 @@ ISR(TIM1_COMPA_vect)
 	if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
 			switchLEDs();
 			if (isHandbreakPulled())  {
-				morseLetter(morseAlarm,tick1Cnt -1);
+				morseLetter(&morseAlarm,tick1Cnt -1);
 			} else {
 				if (isKsbPulled())  {
-					morseLetter(morseK, tick1Cnt-1);
+					morseLetter(&morseK, tick1Cnt-1);
 				}  else { if (!isPassingBeamOn())  {
-						morseLetter(morseB  ,tick1Cnt -1);
+						morseLetter(&morseB  ,tick1Cnt -1);
 					} else {
 						// nothing to do on buzzer	
 					}
