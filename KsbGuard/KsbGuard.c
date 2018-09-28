@@ -12,22 +12,25 @@
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 
-#define shortBeepCnt  5
-#define longBeepCnt  20
+#define shortBeepCnt  2
+#define longBeepCnt  10
 
 
 uint16_t  tick0Cnt;
 uint16_t ticks0Needed;
 
-uint8_t tick1Cnt;
+
+uint8_t morseCnt;
 uint8_t ticks1Needed;
 uint8_t ledsRunning;
 
-typedef int8_t   morseLetterType [6] ;
+#define amtMorseTips  10
+typedef uint8_t   morseLetterType [amtMorseTips] ;
+uint8_t  morseCnt;
 
-morseLetterType morseAlarm = {1,1,1,1,1,1};
-morseLetterType morseK = {2,1,2,0,0,0};
-morseLetterType morseB = {2,1,1,1,0,0};	
+morseLetterType morseAlarm = {1,1,1,1,1,1,1,1,1,1};
+morseLetterType morseK = {2,1,2,0,0,0,0,0,0,0};
+morseLetterType morseB = {2,1,1,1,0,0,0,0,0,0};
 	
 morseLetterType * currentMorseLetter;	
 
@@ -71,22 +74,37 @@ int isEngineRunning()
 
 void startLEDs()
 {
-	ledsRunning = 1;
-	// set 1 led port
+	if (ledsRunning == 0) {
+		ledsRunning = 1;
+		PORTA |= (1 << PORTA0);
+	}
 }
 
 void stopLEDs()
 {
 	ledsRunning = 0;
+	
 	// set led ports to 0
+	PORTA &= ~((1 << PORTA0) | (1 << PORTA1));
 }
 
-void switchLEDs()
+void togglePortAPin(uint8_t pos)
+{
+	if ((PORTA & (1 << pos)) != 0 )  {
+		PORTA &= ~(1 << pos);
+	} else {
+		PORTA |= (1 << pos);			
+	}
+}
+
+void toggleLEDs()
 {
 	if (! ledsRunning)  {
 		startLEDs();
 	}
 	// toggle led ports
+	togglePortAPin(PORTA0);
+	togglePortAPin(PORTA1);
 }
 
 void startTimer0()
@@ -106,12 +124,14 @@ void stopTimer0()
 void startBuzzer()
 {
 	// set buzzer on
+	PORTA |= (1<<PORTA2);
 	startTimer0();
 }
 
 void stopBuzzer()
 {
 	// set buzzer off
+	PORTA &= ~(1 << PORTA2);
 	stopTimer0();
 }
 
@@ -141,15 +161,16 @@ void stopBeep()
 	stopBuzzer();
 }
 
-void morseLetter(morseLetterType* letter, int pos) 
+void morseLetter(morseLetterType* letter, uint8_t pos) 
 {
-	if (pos == 0) {
+	if ((pos == 0) ||(currentMorseLetter != letter)) {
 		currentMorseLetter =  letter;
+		pos = 0;
 	}
-	if (*currentMorseLetter[pos] == 1)  {
+	if ((*currentMorseLetter)[pos] == 1)  {
 		beepShort();
 	} else {
-		if (*currentMorseLetter[pos] == 2) {
+		if ((*currentMorseLetter)[pos] == 2) {
 			beepLong();
 		} else {
 			// take a break  :-)
@@ -171,27 +192,26 @@ ISR(TIM0_COMPA_vect)
 ISR(TIM1_COMPA_vect)
 {
 	cli();
-	tick1Cnt += 1;
-	if (tick1Cnt > 6) { tick1Cnt = 0;}
-	
 	if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
-			switchLEDs();
+			if (morseCnt >= amtMorseTips) { morseCnt = 0;}
+			toggleLEDs();
 			if (isHandbreakPulled())  {
-				morseLetter(&morseAlarm,tick1Cnt -1);
+				morseLetter(&morseAlarm,morseCnt);
 			} else {
 				if (isKsbPulled())  {
-					morseLetter(&morseK, tick1Cnt-1);
+					morseLetter(&morseK, morseCnt);
 				}  else { if (!isPassingBeamOn())  {
-						morseLetter(&morseB  ,tick1Cnt -1);
+						morseLetter(&morseB  ,morseCnt );
 					} else {
 						// nothing to do on buzzer	
 					}
 				}
 			}	
+			++morseCnt;
 		}  else {
 			stopLEDs();
+			morseCnt = 0;
 		}
-	
 	sei();
 }
 
@@ -235,7 +255,8 @@ void setHW()
 
 // set Timer 1    
 	
-	tick1Cnt = 0;
+	morseCnt = 0;
+			
 			
 	OCR1A = 7812;  // counter top value means approx   1 interrupt per sec	
 	TCNT1 = 0x0000;	
