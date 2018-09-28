@@ -35,28 +35,36 @@ morseLetterType * currentMorseLetter;
 int isHandbreakPulled()
 {
 	int res = 0;
-	
+	if ( (PINB & (1<< PINB0) == 0 )  ){
+		res = 1;
+	}
 	return res;
 }
 
 int isKsbPulled()
 {
 	int res = 0;
-	
+	if ( (PINB & (1<< PINB2) == 0 )  ){
+		res = 1;
+	}
 	return res;
 }
 
 int isPassingBeamOn()
 {
 	int res = 0;
-	
+	if ( (PINB & (1<< PINB0) == 0 )  ){
+		res = 1;
+	}	
 	return res;
 }
 
 int isEngineRunning()
 {
 	int res = 0;
-	
+	if ( (PINB & (1<< PINB0) == 0 )  ){
+		res = 1;
+	}	
 	return res;
 	
 }
@@ -192,11 +200,9 @@ void setHW()
 	cli();
 	//  set GPIO
 	
-		PORTA = 0x00;
-		DDRA = 0x00;  // tobe set as needed for port A and B
+		DDRA = ((1 << PORTA0) | (1 << PORTA1) | (1 << PORTA2)    );  //  set as needed for port A and B
 		
-		PORTB = 0x00;
-		DDRB  = 0x00;	
+		DDRB  = 0x00;	//  all input except reset (managed by cpu or debugger)
 
 	
 	//  set pcintn interrupts so that the system can get halted when idle
