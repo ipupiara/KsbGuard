@@ -15,6 +15,16 @@
 #define shortBeepCnt  2
 #define longBeepCnt  10
 
+/*
+enum morseStates
+{
+	morseBeep,
+	morseBreak,
+	morseEndletter
+};
+
+*/
+
 
 uint16_t  tick0Cnt;
 uint16_t ticks0Needed;
@@ -23,6 +33,7 @@ uint16_t ticks0Needed;
 uint8_t morseCnt;
 uint8_t ticks1Needed;
 uint8_t ledsRunning;
+uint8_t morseState;
 
 #define amtMorseTips  10
 typedef uint8_t   morseLetterType [amtMorseTips] ;
@@ -144,6 +155,14 @@ void beepTime(uint16_t cnt)
 	
 	
 	startBuzzer();
+}
+
+void breakTime(uint16_t cnt)
+{
+	tick0Cnt = 0;
+	ticks0Needed = cnt;
+	
+	startTimer0();
 }
 
 void beepLong()
