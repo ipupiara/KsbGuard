@@ -15,6 +15,8 @@
 #define shortBeepCnt  2
 #define longBeepCnt  10
 
+#define morseDelay  60
+
 /*
 enum morseStates
 {
@@ -25,6 +27,8 @@ enum morseStates
 
 */
 
+
+uint16_t  morseDelayCnt;
 
 uint16_t  tick0Cnt;
 uint16_t ticks0Needed;
@@ -182,18 +186,22 @@ void stopBeep()
 
 void morseLetter(morseLetterType* letter, uint8_t pos) 
 {
-	if ((pos == 0) ||(currentMorseLetter != letter)) {
-		currentMorseLetter =  letter;
-		pos = 0;
-	}
-	if ((*currentMorseLetter)[pos] == 1)  {
-		beepShort();
-	} else {
-		if ((*currentMorseLetter)[pos] == 2) {
-			beepLong();
-		} else {
-			// take a break  :-)
+	if (morseDelayCnt >= morseDelay)  {
+		if ((pos == 0) ||(currentMorseLetter != letter)) {
+			currentMorseLetter =  letter;
+			pos = 0;
 		}
+		if ((*currentMorseLetter)[pos] == 1)  {
+			beepShort();
+		} else {
+			if ((*currentMorseLetter)[pos] == 2) {
+				beepLong();
+			} else {
+				// take a break  :-)
+			}
+		}
+	} else {
+		++ morseDelayCnt;
 	}
 }
 
@@ -230,6 +238,7 @@ ISR(TIM1_COMPA_vect)
 		}  else {
 			stopLEDs();
 			morseCnt = 0;
+			morseDelayCnt = 0;
 		}
 	sei();
 }
@@ -275,6 +284,7 @@ void setHW()
 // set Timer 1    
 	
 	morseCnt = 0;
+	morseDelayCnt = 0;
 			
 			
 	OCR1A = 7812;  // counter top value means approx   1 interrupt per sec	
