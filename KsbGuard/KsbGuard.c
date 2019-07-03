@@ -27,6 +27,7 @@ enum morseStates
 
 */
 
+#define ticks1Needed 2
 
 uint16_t  morseDelayCnt;
 
@@ -35,19 +36,20 @@ uint16_t ticks0Needed;
 
 
 uint8_t morseCnt;
-uint8_t ticks1Needed;
+uint8_t ticks1Cnt;
 uint8_t ledsRunning;
 uint8_t morseState;
 
-#define amtMorseTips  10
-typedef uint8_t   morseLetterType [amtMorseTips] ;
-uint8_t  morseCnt;
 
-morseLetterType morseAlarm = {1,1,1,1,1,1,1,1,1,1};
-morseLetterType morseK = {2,1,2,0,0,0,0,0,0,0};
-morseLetterType morseB = {2,1,1,1,0,0,0,0,0,0};
-	
-morseLetterType * currentMorseLetter;	
+
+#define morseAlarm ". . . . . . . ."
+#define morseK "- . -"
+#define morseB "- . . ."
+
+
+uint8_t  morseCnt;
+uint8_t  morseTips;	
+char* currentMorseLetter;	
 
 
 int isHandbreakPulled()
@@ -219,27 +221,28 @@ ISR(TIM0_COMPA_vect)
 ISR(TIM1_COMPA_vect)
 {
 	cli();
-	if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
-			if (morseCnt >= amtMorseTips) { morseCnt = 0;}
-			toggleLEDs();
-			if (isHandbreakPulled())  {
-				morseLetter(&morseAlarm,morseCnt);
-			} else {
-				if (isKsbPulled())  {
-					morseLetter(&morseK, morseCnt);
-				}  else { if (!isPassingBeamOn())  {
-						morseLetter(&morseB  ,morseCnt );
-					} else {
-						// nothing to do on buzzer	
+	if (ticks1Cnt >= ticks1Needed) {
+		if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
+				toggleLEDs();
+				if (isHandbreakPulled())  {
+					morseLetter(morseAlarm);
+				} else {
+					if (isKsbPulled())  {
+						morseLetter(morseK);
+					}  else { if (!isPassingBeamOn())  {
+							morseLetter(morseB  );
+						} else {
+							// nothing to do on buzzer	
+						}
 					}
-				}
-			}	
-			++morseCnt;
-		}  else {
-			stopLEDs();
-			morseCnt = 0;
-			morseDelayCnt = 0;
+				}	
+			
+			}  else {
+				stopLEDs();
+				stopBuzzer();
+			}
 		}
+		++ ticks1Cnt;
 	sei();
 }
 
@@ -295,6 +298,8 @@ void setHW()
 	
 	GTCCR = 0x00;
 	TIMSK1  = 1 << OCIE1A;  //  interrupt needed 	
+	
+	ticks1Cnt = 0;
 		
 	sei();
 }
