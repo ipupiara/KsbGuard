@@ -17,38 +17,24 @@
 
 #define morseDelay  60
 
-/*
-enum morseStates
-{
-	morseBeep,
-	morseBreak,
-	morseEndletter
-};
-
-*/
 
 #define ticks1Needed 2
 
-uint16_t  morseDelayCnt;
 
-uint16_t  tick0Cnt;
-uint16_t ticks0Needed;
+uint8_t  tipCnt;
+uint8_t tipsNeeded;
 
+uint8_t  tick0Cnt;
+uint8_t  tick0Needed;
 
-uint8_t morseCnt;
 uint8_t ticks1Cnt;
 uint8_t ledsRunning;
-uint8_t morseState;
-
-
 
 #define morseAlarm ". . . . . . . ."
 #define morseK "- . -"
 #define morseB "- . . ."
+#define morseL ". - . ."
 
-
-uint8_t  morseCnt;
-uint8_t  morseTips;	
 char* currentMorseLetter;	
 
 
@@ -91,10 +77,8 @@ int isEngineRunning()
 
 void startLEDs()
 {
-	if (ledsRunning == 0) {
-		ledsRunning = 1;
-		PORTA |= (1 << PORTA0);
-	}
+	ledsRunning = 1;
+	PORTA |= (1 << PORTA0);
 }
 
 void stopLEDs()
@@ -127,7 +111,7 @@ void toggleLEDs()
 void startTimer0()
 {
 	TCNT0 = 0x00;
-	tick0Cnt = 0x0000;
+	tipCnt = 0x0000;
 	TCCR0B = ((1 << CS02)|  (1 << CS00)  ) ;   // set prescaler to 1024, hence start timer
 
 }
@@ -156,8 +140,8 @@ void stopBuzzer()
 
 void beepTime(uint16_t cnt)
 {
-	tick0Cnt = 0;
-	ticks0Needed = cnt;
+	tipCnt = 0;
+	tipsNeeded = cnt;
 	
 	
 	startBuzzer();
@@ -165,8 +149,8 @@ void beepTime(uint16_t cnt)
 
 void breakTime(uint16_t cnt)
 {
-	tick0Cnt = 0;
-	ticks0Needed = cnt;
+	tipCnt = 0;
+	tipsNeeded = cnt;
 	
 	startTimer0();
 }
@@ -186,34 +170,46 @@ void stopBeep()
 	stopBuzzer();
 }
 
-void morseLetter(morseLetterType* letter, uint8_t pos) 
+void morseNextTip()
 {
-	if (morseDelayCnt >= morseDelay)  {
-		if ((pos == 0) ||(currentMorseLetter != letter)) {
-			currentMorseLetter =  letter;
-			pos = 0;
-		}
-		if ((*currentMorseLetter)[pos] == 1)  {
-			beepShort();
-		} else {
-			if ((*currentMorseLetter)[pos] == 2) {
-				beepLong();
-			} else {
-				// take a break  :-)
-			}
-		}
+	if (tipCnt < tipsNeeded) {
+		char tip = currentMorseLetter[tipCnt];
+		tipCnt += 1;
+		if (tip == '.') {
+			tick0Needed = shortBeepCnt;
+			startBuzzer();
+		}  else if (tip == ' ') {
+			tick0Needed = longBeepCnt;
+			startBuzzer();
+		} else if (tip == ' ') {
+			tick0Needed = shortBeepCnt;
+		}	
+		tick0Cnt = 0;
+		startTimer0();	
 	} else {
-		++ morseDelayCnt;
+		stopBuzzer();
+		stopTimer0();
 	}
+}
+
+void morseLetter(char* letter) 
+{
+	currentMorseLetter = letter;
+	tipCnt = 0;
+	morseNextTip();
 }
 
 ISR(TIM0_COMPA_vect)
 {
 	cli();
-	tick0Cnt += 1;
-	
-	if (tick0Cnt > ticks0Needed) {
+	if (tick0Cnt < tick0Needed) {
+		tick0Cnt += 1;
+	} else {
 		stopBeep();
+		stopTimer0();
+	}
+	if (tipCnt < tipsNeeded)  {
+		morseNextTip();
 	}
 	sei();
 }
@@ -230,7 +226,7 @@ ISR(TIM1_COMPA_vect)
 					if (isKsbPulled())  {
 						morseLetter(morseK);
 					}  else { if (!isPassingBeamOn())  {
-							morseLetter(morseB  );
+							morseLetter(morseL  );
 						} else {
 							// nothing to do on buzzer	
 						}
@@ -271,9 +267,11 @@ void setHW()
 //		CLKPR = (1<<CLKPS0);
 		
 	// set timer 0
-		
-		tick0Cnt = 0;
-		ticks0Needed = shortBeepCnt;   // somewhat more than 0.1 sec
+	
+	tick0Cnt = 0;
+	tick0Needed = 0;
+	tipCnt = 0;
+	tipsNeeded = 0;
 			
 		OCR0A = 195;  // counter  value means approx  0.025  sec interval 
 		TCNT0 = 0x0000;
@@ -286,8 +284,6 @@ void setHW()
 
 // set Timer 1    
 	
-	morseCnt = 0;
-	morseDelayCnt = 0;
 			
 			
 	OCR1A = 7812;  // counter top value means approx   1 interrupt per sec	
