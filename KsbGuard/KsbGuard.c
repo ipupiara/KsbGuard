@@ -13,12 +13,12 @@
 #include <util/atomic.h>
 
 #define shortBeepCnt  2
-#define longBeepCnt  10
+#define longBeepCnt  8
 
 #define morseDelay  60
 
 
-#define ticks1Needed 2
+#define ticks1Needed 4
 
 
 uint8_t  tipCnt;
@@ -38,7 +38,7 @@ uint8_t ledsRunning;
 char* currentMorseLetter;	
 
 
-int isHandbreakPulled()
+int isHandbreakPulled()   // yellow
 {
 	int res = 0;
 	if ( ((PINB & (1<< PINB0)) == 0 )  ){
@@ -47,7 +47,7 @@ int isHandbreakPulled()
 	return res;
 }
 
-int isKsbPulled()
+int isKsbPulled()  //  if-lightsensor
 {
 	int res = 0;
 	if ( ((PINB & (1<< PINB2)) == 0 )  ){
@@ -56,7 +56,7 @@ int isKsbPulled()
 	return res;
 }
 
-int isPassingBeamOn()
+int isPassingBeamOn()    //  white
 {
 	int res = 0;
 	if ( ((PINA & (1<< PINA3)) == 0 )  ){
@@ -65,7 +65,7 @@ int isPassingBeamOn()
 	return res;
 }
 
-int isEngineRunning()
+int isEngineRunning()  //  green
 {
 	int res = 0;
 	if ( ((PINB & (1<< PINB1)) == 0 )  ){
@@ -111,7 +111,7 @@ void toggleLEDs()
 void startTimer0()
 {
 	TCNT0 = 0x00;
-	tipCnt = 0x0000;
+	tick0Cnt = 0;
 	TCCR0B = ((1 << CS02)|  (1 << CS00)  ) ;   // set prescaler to 1024, hence start timer
 
 }
@@ -138,32 +138,6 @@ void stopBuzzer()
 
 
 
-void beepTime(uint16_t cnt)
-{
-	tipCnt = 0;
-	tipsNeeded = cnt;
-	
-	
-	startBuzzer();
-}
-
-void breakTime(uint16_t cnt)
-{
-	tipCnt = 0;
-	tipsNeeded = cnt;
-	
-	startTimer0();
-}
-
-void beepLong()
-{
-	beepTime(longBeepCnt);
-}
-
-void beepShort()
-{
-	beepTime(shortBeepCnt);
-}
 
 void stopBeep()
 {
@@ -178,11 +152,12 @@ void morseNextTip()
 		if (tip == '.') {
 			tick0Needed = shortBeepCnt;
 			startBuzzer();
-		}  else if (tip == ' ') {
+		}  else if (tip == '-') {
 			tick0Needed = longBeepCnt;
 			startBuzzer();
 		} else if (tip == ' ') {
 			tick0Needed = shortBeepCnt;
+			startTimer0();
 		}	
 		tick0Cnt = 0;
 		startTimer0();	
@@ -194,8 +169,10 @@ void morseNextTip()
 
 void morseLetter(char* letter) 
 {
+	stopBuzzer(); // if it still accidentally should run
 	currentMorseLetter = letter;
-	tipCnt = 0;
+	tipCnt = 0; 
+	tipsNeeded = strlen(letter);
 	morseNextTip();
 }
 
@@ -206,10 +183,10 @@ ISR(TIM0_COMPA_vect)
 		tick0Cnt += 1;
 	} else {
 		stopBeep();
-		stopTimer0();
-	}
-	if (tipCnt < tipsNeeded)  {
-		morseNextTip();
+		//stopTimer0();
+		if (tipCnt < tipsNeeded)  {
+			morseNextTip();
+		}
 	}
 	sei();
 }
@@ -220,13 +197,13 @@ ISR(TIM1_COMPA_vect)
 	if (ticks1Cnt >= ticks1Needed) {
 		if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
 				toggleLEDs();
-				if (isHandbreakPulled())  {
+				if (isHandbreakPulled())  {  // yellow
 					morseLetter(morseAlarm);
 				} else {
-					if (isKsbPulled())  {
+					if (isKsbPulled())  {   //  if-lightsensor
 						morseLetter(morseK);
 					}  else { if (!isPassingBeamOn())  {
-							morseLetter(morseL  );
+							morseLetter(morseL  );    //   white
 						} else {
 							// nothing to do on buzzer	
 						}
