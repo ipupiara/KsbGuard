@@ -35,12 +35,13 @@ uint8_t ledsRunning;
 #define morseB "- . . ."
 #define morseL ". - . ."
 
+//  all max 250
 #define breakCountDown   60
 #define ksbCountDown    120
 #define lightCountDown  120
 
 char* currentMorseLetter;	
-uint32_t  alarmSecondCount;
+uint8_t  alarmSecondCount;
 
 
 int isHandbreakPulled()   // yellow
@@ -55,7 +56,7 @@ int isHandbreakPulled()   // yellow
 int isKsbPulled()  //  if-lightsensor
 {
 	int res = 0;
-	if ( ((PINB & (1<< PINB2)) == 0 )  ){
+	if ( ((PINB & (1<< PINB2)) == 1 )  ){
 		res = 1;
 	}
 	return res;
@@ -201,16 +202,16 @@ ISR(TIM1_COMPA_vect)
 	cli();
 	if (ticks1Cnt >= ticks1Needed) {
 		if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
-				++ alarmSecondCount;
+				if (alarmSecondCount <= 250)  ++ alarmSecondCount;
 				toggleLEDs();
 							
 				if (isHandbreakPulled())  {  // yellow
-					if (alarmSecondCount > breakCountDown )  morseLetter(morseB);
+					if ((alarmSecondCount > breakCountDown) && ((alarmSecondCount & 0x03 ) == 0 ) )  morseLetter(morseB);
 				} else {
 					if (isKsbPulled())  {   //  if-lightsensor
-						if (alarmSecondCount > ksbCountDown ) morseLetter(morseK);
+						if ((alarmSecondCount > ksbCountDown)  && ((alarmSecondCount & 0x03 ) == 0 ) ) morseLetter(morseK);
 					}  else { if (!isPassingBeamOn())  {
-							if (alarmSecondCount > lightCountDown ) morseLetter(morseL  );    //   white
+							if ((alarmSecondCount > lightCountDown)  && ((alarmSecondCount & 0x03 ) == 0 ) ) morseLetter(morseL  );    //   white
 						} else {
 							// nothing to do on buzzer	
 						}
