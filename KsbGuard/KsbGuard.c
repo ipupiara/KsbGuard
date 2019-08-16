@@ -35,7 +35,12 @@ uint8_t ledsRunning;
 #define morseB "- . . ."
 #define morseL ". - . ."
 
+#define breakCountDown   60
+#define ksbCountDown    120
+#define lightCountDown  120
+
 char* currentMorseLetter;	
+uint32_t  alarmSecondCount;
 
 
 int isHandbreakPulled()   // yellow
@@ -196,14 +201,16 @@ ISR(TIM1_COMPA_vect)
 	cli();
 	if (ticks1Cnt >= ticks1Needed) {
 		if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
+				++ alarmSecondCount;
 				toggleLEDs();
+							
 				if (isHandbreakPulled())  {  // yellow
-					morseLetter(morseAlarm);
+					if (alarmSecondCount > breakCountDown )  morseLetter(morseB);
 				} else {
 					if (isKsbPulled())  {   //  if-lightsensor
-						morseLetter(morseK);
+						if (alarmSecondCount > ksbCountDown ) morseLetter(morseK);
 					}  else { if (!isPassingBeamOn())  {
-							morseLetter(morseL  );    //   white
+							if (alarmSecondCount > lightCountDown ) morseLetter(morseL  );    //   white
 						} else {
 							// nothing to do on buzzer	
 						}
@@ -213,6 +220,7 @@ ISR(TIM1_COMPA_vect)
 			}  else {
 				stopLEDs();
 				stopBuzzer();
+				alarmSecondCount = 0;
 			}
 		}
 		++ ticks1Cnt;
@@ -249,6 +257,8 @@ void setHW()
 	tick0Needed = 0;
 	tipCnt = 0;
 	tipsNeeded = 0;
+	
+	alarmSecondCount = 0;
 			
 		OCR0A = 195;  // counter  value means approx  0.025  sec interval 
 		TCNT0 = 0x0000;
