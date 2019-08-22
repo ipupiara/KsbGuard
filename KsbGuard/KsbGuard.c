@@ -21,7 +21,7 @@
 #define ticks1Needed 4
 
 #define morseShortInterval 0x0007   // all 7 seconds
-#define morseLongInterval 0x003F   // approx break for 1 minutes (256 seconds)
+#define morseLongInterval 0x003F   // approx break for 1 minutes 
 uint16_t morseInterval;
 
 
@@ -270,7 +270,7 @@ void initHW()
 		morseInterval = morseShortInterval;
 
 	
-	//  set pcintn interrupts so that the system can get halted when idle
+	//  set pcintn interrupts so that the beep can get delayed when idle
 	
 		ledsRunning = 0;
 		
