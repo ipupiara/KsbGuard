@@ -20,6 +20,14 @@
 
 #define ticks1Needed 4
 
+#define morseShortInterval 0x0007   // all 7 seconds
+#define morseLongInterval 0x003F   // approx break for 1 minutes (256 seconds)
+uint16_t morseInterval;
+
+
+#define keyBoardInterval  2  // disable pin pressed "thousand" times in a second (as can happen on a direct connected pin without R-C bias)
+uint8_t keyBoardIntervalCount;
+
 
 uint8_t  tipCnt;
 uint8_t tipsNeeded;
@@ -41,7 +49,7 @@ uint8_t ledsRunning;
 #define lightCountDown  120
 
 char* currentMorseLetter;	
-uint8_t  alarmSecondCount;
+uint16_t  alarmSecondCount;
 
 
 int isHandbreakPulled()   // yellow
@@ -56,7 +64,7 @@ int isHandbreakPulled()   // yellow
 int isKsbPulled()  //  if-lightsensor
 {
 	int res = 0;
-	if ( ((PINB & (1<< PINB2)) == 1 )  ){
+	if ( ((PINB & (1<< PINB2)) != 0 )  ){
 		res = 1;
 	}
 	return res;
@@ -165,7 +173,6 @@ void morseNextTip()
 			tick0Needed = shortBeepCnt;
 			startTimer0();
 		}	
-		tick0Cnt = 0;
 		startTimer0();	
 	} else {
 		stopBuzzer();
@@ -175,11 +182,13 @@ void morseNextTip()
 
 void morseLetter(char* letter) 
 {
-	stopBuzzer(); // if it still accidentally should run
-	currentMorseLetter = letter;
-	tipCnt = 0; 
-	tipsNeeded = strlen(letter);
-	morseNextTip();
+	if ((alarmSecondCount & morseInterval ) == 0 )   {
+		stopBuzzer(); // if it still accidentally should run
+		currentMorseLetter = letter;
+		tipCnt = 0; 
+		tipsNeeded = strlen(letter);
+		morseNextTip();
+	}
 }
 
 ISR(TIM0_COMPA_vect)
@@ -197,21 +206,37 @@ ISR(TIM0_COMPA_vect)
 	sei();
 }
 
+ISR(PCINT0_vect)  
+{
+	cli();
+  	if (keyBoardIntervalCount >= keyBoardInterval) {     // avoid multiple keypress with one keypress without RC bias (or similar)
+		keyBoardIntervalCount = 0;
+		if (morseInterval == morseShortInterval) {
+			morseInterval = morseLongInterval; 
+		} else {
+			morseInterval = morseShortInterval;
+		}
+	}
+	sei();
+}
+
+
 ISR(TIM1_COMPA_vect)
 {
 	cli();
 	if (ticks1Cnt >= ticks1Needed) {
+		if (keyBoardIntervalCount < keyBoardInterval) ++ keyBoardIntervalCount;
 		if   ( isEngineRunning() &&  ((isKsbPulled()) ||(! isPassingBeamOn()) || isHandbreakPulled()  )) 	{
-				if (alarmSecondCount <= 250)  ++ alarmSecondCount;
+				++ alarmSecondCount;
 				toggleLEDs();
 							
 				if (isHandbreakPulled())  {  // yellow
-					if ((alarmSecondCount > breakCountDown) && ((alarmSecondCount & 0x03 ) == 0 ) )  morseLetter(morseB);
+					if (alarmSecondCount > breakCountDown)  morseLetter(morseB);
 				} else {
-					if (isKsbPulled())  {   //  if-lightsensor
-						if ((alarmSecondCount > ksbCountDown)  && ((alarmSecondCount & 0x03 ) == 0 ) ) morseLetter(morseK);
+					if (isKsbPulled())  {   //  infrared - lightsensor
+						if (alarmSecondCount > ksbCountDown)  morseLetter(morseK);
 					}  else { if (!isPassingBeamOn())  {
-							if ((alarmSecondCount > lightCountDown)  && ((alarmSecondCount & 0x03 ) == 0 ) ) morseLetter(morseL  );    //   white
+							if (alarmSecondCount > lightCountDown)  morseLetter(morseL  );    //   white
 						} else {
 							// nothing to do on buzzer	
 						}
@@ -222,25 +247,34 @@ ISR(TIM1_COMPA_vect)
 				stopLEDs();
 				stopBuzzer();
 				alarmSecondCount = 0;
+				morseInterval = morseShortInterval;
 			}
 		}
 		++ ticks1Cnt;
 	sei();
 }
 
-void setHW()
+void initHW()
 {
 	cli();
 	//  set GPIO
 	
-		DDRA = ((1 << PORTA0) | (1 << PORTA1) | (1 << PORTA2)    );  //  set as needed for port A and B
+		DDRA = ((1 << PORTA0) | (1 << PORTA1) | (1 << PORTA2)    ); 
+		PORTA |= (1 << DDA7);  //  pullup on pin a7 (pushbutton)
+		GIMSK |= (1 <<  PCIE0);  // enable pin change interrupt on port A
+		PCMSK0 |= (1 << PCINT7);  // and enable on pin a7
 		
 		DDRB  = 0x00;	//  all input except reset (managed by cpu or debugger)
+		
+		keyBoardIntervalCount = keyBoardInterval ;
+		morseInterval = morseShortInterval;
 
 	
 	//  set pcintn interrupts so that the system can get halted when idle
 	
 		ledsRunning = 0;
+		
+		morseInterval = morseShortInterval;
 	
 	 // set clock prescaler to 2
 	
@@ -290,7 +324,7 @@ void setHW()
 
 int main(void)
 {
-	setHW();
+	initHW();
     while(1)
     {
         //TODO:: Please write your application code 
