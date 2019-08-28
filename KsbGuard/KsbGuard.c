@@ -244,10 +244,16 @@ ISR(TIM1_COMPA_vect)
 				}	
 			
 			}  else {
-				stopLEDs();
-				stopBuzzer();
-				alarmSecondCount = 0;
-				morseInterval = morseShortInterval;
+				if (isKsbPulled())  {  //  work as before, also if D+ wire is not connected
+					toggleLEDs();
+					++alarmSecondCount;
+				}  else {
+					stopLEDs();
+					stopBuzzer();
+					alarmSecondCount = 0;
+					morseInterval = morseShortInterval;
+					
+				}
 			}
 		}
 		++ ticks1Cnt;
