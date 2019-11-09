@@ -52,41 +52,41 @@ char* currentMorseLetter;
 uint16_t  alarmSecondCount;
 
 
-int isHandbreakPulled()   // yellow
+uint8_t isHandbreakPulled()   // yellow
 {
-	int res = 0;
-	if ( ((PINB & (1<< PINB0)) == 0 )  ){
+	uint8_t res = 0;
+	if ( ((PINA & (1<< PINA3)) != 0 )  ){
 		res = 1;
 	}
 	return res;
 }
 
-int isKsbPulled()  //  if-lightsensor
+uint8_t isKsbPulled()  //  if-lightsensor
 {
-	int res = 0;
+	uint8_t res = 0;
 	if ( ((PINB & (1<< PINB2)) != 0 )  ){
 		res = 1;
 	}
 	return res;
 }
 
-int isPassingBeamOn()    //  white
+uint8_t isPassingBeamOn()    //  white
 {
-	int res = 0;
-	if ( ((PINA & (1<< PINA3)) == 0 )  ){
+	uint8_t res = 0;
+	if ( ((PINB & (1<< PINB0)) == 0 )  ){
 		res = 1;
 	}	
 	return res;
 }
 
-int isEngineRunning()  //  green
+uint8_t isEngineRunning()  //  green
 {
-	int res = 0;
+	uint8_t res = 0;
 	if ( ((PINB & (1<< PINB1)) == 0 )  ){
 		res = 1;
 	}	
 	return res;
-	
+//	return 1;  // used for debugging
 }
 
 void startLEDs()

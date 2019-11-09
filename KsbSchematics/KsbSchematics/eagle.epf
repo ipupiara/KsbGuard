@@ -9,12 +9,6 @@ Desktop="Desktop"
 AutoSaveProject=1
 
 [Win_1]
-Type="Control Panel"
-Loc="379 171 978 570"
-State=3
-Number=0
-
-[Win_2]
 Type="Schematic Editor"
 Loc="379 171 978 570"
 State=3
@@ -61,6 +55,12 @@ PadsSameType=0
 Layer=91
 Views=" 1: -120.677 -8.56488 175.961 172.649"
 Sheet="1"
+
+[Win_2]
+Type="Control Panel"
+Loc="379 171 978 570"
+State=1
+Number=0
 
 [Desktop]
 Screen="1366 768"
